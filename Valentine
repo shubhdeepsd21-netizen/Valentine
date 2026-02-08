@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My Heart Belongs To You</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        :root { 
+            --primary: #d00000; 
+            --secondary: #ff4d6d; 
+            --glass: rgba(255, 255, 255, 0.98);
+        }
+
+        body { 
+            margin: 0; padding: 0; height: 100vh; width: 100vw; 
+            display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; 
+            background: radial-gradient(circle, #ff4d6d 0%, #800000 100%); 
+            overflow: hidden; font-family: 'Poppins', sans-serif; 
+        }
+
+        .outside-header { 
+            color: white; font-family: 'Dancing Script', cursive; 
+            font-size: 28px; margin-bottom: 25px; 
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3); 
+            text-align: center;
+        }
+
+        .card { 
+            background: var(--glass); border-radius: 40px; 
+            width: 88%; max-width: 340px; min-height: 400px; 
+            text-align: center; border: 3px solid rgba(255,255,255,0.3); 
+            box-shadow: 0 20px 45px rgba(0,0,0,0.4); 
+            display: flex; flex-direction: column; 
+            justify-content: space-around; padding: 40px 20px; 
+            box-sizing: border-box; position: relative; z-index: 10; 
+            backdrop-filter: blur(10px);
+        }
+
+        .gf-name { color: var(--primary); font-size: 24px; font-weight: 700; margin: 0; }
+        
+        .question { 
+            color: #2b2d42; font-size: 20px; line-height: 1.5; 
+            font-weight: 400; min-height: 100px; 
+            padding: 0 10px; font-style: italic;
+        }
+        
+        .btn-container { 
+            display: flex; justify-content: center; align-items: center; 
+            gap: 20px; height: 100px; position: relative; 
+        }
+
+        button { 
+            padding: 15px 38px; font-size: 18px; font-weight: 600; 
+            border: none; border-radius: 50px; cursor: pointer; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            touch-action: manipulation;
+        }
+
+        #yesBtn { 
+            background: linear-gradient(135deg, #ff4d6d, #d00000); 
+            color: white; position: relative; z-index: 15;
+        }
+
+        #noBtn { 
+            background: #adb5bd; color: white; position: relative; 
+            z-index: 20; transition: all 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+
+        .wa-send-btn { 
+            background: #25D366; color: white; text-decoration: none; 
+            padding: 16px 30px; border-radius: 50px; font-weight: 700; 
+            display: inline-block; margin-top: 15px; font-size: 18px; 
+        }
+    </style>
+</head>
+<body onpointerdown="unlockAudio()">
+
+    <div class="outside-header">Forever Starts Today... ❤️</div>
+
+    <div class="card" id="mainCard">
+        <p class="gf-name">My Dearest Shona Bubbu,</p> 
+        <h1 class="question" id="qText">Every heartbeat brings me closer to you. Will you be my Valentine?</h1>
+        <div class="btn-container">
+            <button id="yesBtn" onclick="sayYes()">Yes</button>
+            <button id="noBtn" onclick="moveNo()">No</button>
+        </div>
+    </div>
+
+<script>
+    let noCount = 0;
+    let audioReady = false;
+
+    const sadSfx = new Audio("https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg");
+    const sweetSfx = new Audio("https://actions.google.com/sounds/v1/cartoon/clink_and_chime.ogg");
+
+    function unlockAudio() {
+        if (!audioReady) {
+            sadSfx.play().then(() => { sadSfx.pause(); sadSfx.currentTime = 0; }).catch(() => {});
+            sweetSfx.play().then(() => { sweetSfx.pause(); sweetSfx.currentTime = 0; }).catch(() => {});
+            audioReady = true;
+        }
+    }
+
+    // A mix of naughty, witty, and playfully sad
+    const sarcasms = [
+        "Is that a 'No' or are you just teasing me? 😏",
+        "Stop playing hard to get! My heart can't take it. 🥺",
+        "You're being a little bratty today, aren't you? 😈",
+        "Clicking that button doesn't count as exercise! 🏃‍♀️",
+        "Ouch! That 'No' hurt more than a spanking. 😳",
+        "Are you punishing me for being too cute? 😇",
+        "Don't make me come over there and click 'Yes' for you. 🔥",
+        "One 'Yes' and I'll be on my best behavior... maybe. 😉",
+        "Legend says she's still trying to resist me... 💖"
+    ];
+
+    function moveNo() {
+        noCount++;
+        document.getElementById('qText').innerText = sarcasms[noCount % sarcasms.length];
+        
+        if (audioReady) {
+            sadSfx.currentTime = 0;
+            sadSfx.play().catch(() => {});
+        }
+
+        const noBtn = document.getElementById('noBtn');
+        const qElem = document.getElementById('qText');
+        const qRect = qElem.getBoundingClientRect();
+        
+        noBtn.style.position = 'fixed';
+
+        const centerX = qRect.left + qRect.width / 2;
+        const centerY = qRect.top + qRect.height / 2;
+        
+        // Locked tight radius (80-120px)
+        const angle = Math.random() * Math.PI * 2;
+        const radius = 80 + Math.random() * 40; 
+
+        let newX = centerX + radius * Math.cos(angle) - (noBtn.offsetWidth / 2);
+        let newY = centerY + radius * Math.sin(angle) - (noBtn.offsetHeight / 2);
+
+        // Clamping to screen edges
+        newX = Math.max(15, Math.min(newX, window.innerWidth - noBtn.offsetWidth - 15));
+        newY = Math.max(15, Math.min(newY, window.innerHeight - noBtn.offsetHeight - 15));
+
+        noBtn.style.left = `${newX}px`;
+        noBtn.style.top = `${newY}px`;
+    }
+
+    function sayYes() {
+        if (audioReady) {
+            sweetSfx.currentTime = 0;
+            sweetSfx.play().catch(() => {});
+        }
+        confetti({ particleCount: 200, spread: 90, origin: { y: 0.6 } });
+        
+        const myNumber = "9760030420"; 
+        const msg = `YES! ❤️ My heart tried to say 'No' ${noCount} times, but love won! 😂`;
+        const waUrl = `https://api.whatsapp.com/send?phone=${myNumber}&text=${encodeURIComponent(msg)}`;
+
+        document.getElementById('mainCard').innerHTML = `
+            <div style="font-size: 70px; margin-bottom: 20px;">💑</div>
+            <h1 style="margin: 0; font-family: 'Dancing Script', cursive; font-size: 32px;">Finally!</h1>
+            <p style="color: #444; font-size: 16px; margin: 15px 0;">I knew you'd give in eventually. 😉</p>
+            <a href="${waUrl}" class="wa-send-btn">Send My 'Yes' 📲</a>
+        `;
+        if(document.getElementById('noBtn')) document.getElementById('noBtn').remove();
+    }
+</script>
+</body>
+</html>
